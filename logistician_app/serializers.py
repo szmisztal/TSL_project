@@ -7,19 +7,21 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'password']
 
-class TransportationOrderSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TransportationOrder
-        fields = ['id', 'trailer_type', 'load_weight', 'load_place', 'delivery']
-
 class LoadPlaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = LoadPlace
-        fields = ['id', 'country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number']
+        fields = ['country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number']
 
 class DeliverySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Delivery
-        fields = ['id', 'country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number', 'cargo_weight']
+        fields = ['country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number', 'cargo_weight']
+
+class TransportationOrderSerializer(serializers.HyperlinkedModelSerializer):
+    load_place = LoadPlaceSerializer(many = False)
+    delivery = DeliverySerializer(many = True)
+    class Meta:
+        model = TransportationOrder
+        fields = ['date', 'trailer_type', 'load_place', 'load_weight', 'delivery']
 
 
