@@ -4,5 +4,5 @@ from logistician_app import urls as logistician_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('logistician/', include(logistician_urls.url_patterns))
+    path('logistician/', include(logistician_urls.urlpatterns))
 ]
