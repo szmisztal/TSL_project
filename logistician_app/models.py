@@ -8,11 +8,11 @@ class TrailerType(models.TextChoices):
         TIPPER = "Tipper trailer"
         LOW_LOADER = "Low-loader trailer"
         CONTAINER = "Container trailer"
-        SELF_UNLOADING = "Self-unloading trailer"
         TANKER = "Tanker trailer"
+        SELF_UNLOADING = "Self-unloading trailer"
         INSULATED = "Insulated trailer"
 
-class LoadPlace(models.Model):
+class LoadOrDeliveryPlace(models.Model):
     country = models.CharField(max_length = 64)
     state = models.CharField(max_length = 64)
     town = models.CharField(max_length = 64)
@@ -22,27 +22,43 @@ class LoadPlace(models.Model):
     contact_number = models.PositiveSmallIntegerField(blank = True, null = True)
 
     def __str__(self):
-        return f"Load place: {self.country} - {self.state} - {self.town} {self.postal_code}, st. {self.street} {self.street_number}, Contact: {self.contact_number}"
+        return f"{self.country} - {self.state} - {self.town} {self.postal_code}, st. {self.street} " \
+               f"{self.street_number}, Contact: {self.contact_number}"
+
+class TankerTrailer(models.Model):
+    chamber_1 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(7100)])
+    chamber_2 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(9600)])
+    chamber_3 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(3700)])
+    chamber_4 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(6200)])
+    chamber_5 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(11500)])
+
+    def get_volume(self):
+        whole_volume = self.chamber_1 + self.chamber_2 + self.chamber_3 + self.chamber_4 + self.chamber_5
+        if whole_volume > 38100:
+            raise ValueError
+        else:
+            return whole_volume
+
+    def __str__(self):
+        return str(self.get_volume())
 
 class TransportationOrder(models.Model):
     date = models.DateField(default = datetime.date.today, validators = [MinValueValidator(datetime.date.today)])
     trailer_type = models.CharField(max_length = 64, choices = TrailerType.choices)
-    load_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(1), MaxValueValidator(24)])
-    load_place = models.ForeignKey(LoadPlace, on_delete = models.PROTECT, related_name = "transportation_order")
-
-class Delivery(models.Model):
-    country = models.CharField(max_length = 64)
-    state = models.CharField(max_length = 64)
-    town = models.CharField(max_length = 64)
-    postal_code = models.CharField(max_length = 16)
-    street = models.CharField(max_length = 64)
-    street_number = models.PositiveSmallIntegerField()
-    contact_number = models.PositiveSmallIntegerField(blank = True, null = True)
-    cargo_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(1), MaxValueValidator(24)], default = 'Whole cargo')
-    transportation_order = models.ForeignKey(TransportationOrder, on_delete = models.PROTECT, related_name = "delivery")
+    tanker_volume = models.OneToOneField(TankerTrailer, on_delete = models.CASCADE, blank = True, null = True, related_name = "tanker+")
+    load_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(24000)])
+    load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order load+")
+    delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
 
     def __str__(self):
-        return f"Delivery place: {self.country} - {self.state} - {self.town} {self.postal_code}, st. {self.street} {self.street_number}, Contact: {self.contact_number}, Cargo weight: {self.cargo_weight}t."
+        if self.trailer_type == "Tanker trailer":
+            return f"Transportation order date: {self.date} \nLoad place: {self.load_place} \nTanker volume: {self.tanker_volume} " \
+                   f"\nDelivery place: {self.delivery_place}"
+        else:
+            return f"Transportation order date: {self.date} \nLoad place: {self.load_place} \nTrailer: {self.trailer_type} " \
+                   f"\nWeight: {self.load_weight} \nDelivery place: {self.delivery_place}"
+
+
 
 
 
