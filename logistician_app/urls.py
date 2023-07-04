@@ -5,9 +5,9 @@ from logistician_app import views
 
 router = routers.DefaultRouter()
 router.register(r'transportation_orders', views.TransportationOrderViewSet)
-router.register(r'load_places', views.LoadPlaceViewSet)
-router.register(r'deliveries', views.DeliveryViewSet)
+router.register(r'places', views.LoadOrDeliveryPlaceViewSet)
+router.register(r'tanker_trailers', views.TankerTrailerViewSet)
 
-url_patterns = [
+urlpatterns = [
     path('', include(router.urls))
 ]
