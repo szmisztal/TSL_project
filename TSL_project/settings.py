@@ -16,7 +16,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'logistician_app'
+    'rest_framework.authtoken',
+    'logistician_app',
+    'user_app'
 ]
 
 REST_FRAMEWORK = {
@@ -75,6 +77,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'user_app.CustomUser'
 
 LANGUAGE_CODE = 'en-us'
 
