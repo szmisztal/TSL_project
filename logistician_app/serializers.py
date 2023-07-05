@@ -1,11 +1,5 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password']
 
 class LoadOrDeliveryPlaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

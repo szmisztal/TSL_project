@@ -3,14 +3,14 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime
 
 class TrailerType(models.TextChoices):
-        CURTAIN_SIDE = "Curtain-side trailer"
-        REFRIGERATED = "Refrigerated trailer"
-        TIPPER = "Tipper trailer"
-        LOW_LOADER = "Low-loader trailer"
-        CONTAINER = "Container trailer"
-        TANKER = "Tanker trailer"
-        SELF_UNLOADING = "Self-unloading trailer"
-        INSULATED = "Insulated trailer"
+    CURTAIN_SIDE = "Curtain-side trailer"
+    REFRIGERATED = "Refrigerated trailer"
+    TIPPER = "Tipper trailer"
+    LOW_LOADER = "Low-loader trailer"
+    CONTAINER = "Container trailer"
+    TANKER = "Tanker trailer"
+    SELF_UNLOADING = "Self-unloading trailer"
+    INSULATED = "Insulated trailer"
 
 class LoadOrDeliveryPlace(models.Model):
     country = models.CharField(max_length = 64)
