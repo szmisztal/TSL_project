@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
@@ -16,6 +17,7 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
         serializer = TransportationOrderSerializer(order)
         return Response(serializer.data)
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         order = TransportationOrder.objects.create(date = request.data["date"],
                                                    trailer_type = request.data["trailer_type"],
