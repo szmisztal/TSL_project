@@ -1,10 +1,10 @@
-from django.shortcuts import render
 from django.db import transaction
+from django.views import generic
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
-
+from .forms import OrderForm, PlaceForm, TankerTrailerForm
 class TransportationOrderViewSet(viewsets.ModelViewSet):
     serializer_class = TransportationOrderSerializer
 
@@ -24,7 +24,7 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
                                                    tanker_volume = request.data["tanker_volume"],
                                                    load_weight = request.data["load_weight"],
                                                    load_place = request.data["load_place"],
-                                                   delivery_place = request.datap["delivery_place"])
+                                                   delivery_place = request.data["delivery_place"])
         serializer = TransportationOrderSerializer(order)
         return Response(serializer.data)
 
@@ -52,3 +52,21 @@ class LoadOrDeliveryPlaceViewSet(viewsets.ModelViewSet):
 class TankerTrailerViewSet(viewsets.ModelViewSet):
     queryset = TankerTrailer.objects.all()
     serializer_class = TankerTrailerSerializer
+
+class NewOrder(generic.CreateView):
+    model = TransportationOrder
+    form_class = OrderForm
+    template_name = "create_order.html"
+    success_url = "index.html"
+
+class NewPlace(generic.CreateView):
+    model = LoadOrDeliveryPlace
+    form_class = PlaceForm
+    template_name = "create_place.html"
+    success_url = "index.html"
+
+class NewTanker(generic.CreateView):
+    model = TankerTrailer
+    form_class = TankerTrailerForm
+    template_name = "create_tanker_trailer.html"
+    success_url = "index.html"
