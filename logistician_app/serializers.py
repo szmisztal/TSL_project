@@ -4,7 +4,7 @@ from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 class LoadOrDeliveryPlaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = LoadOrDeliveryPlace
-        fields = ['id', 'country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number']
+        fields = ['id', 'company', 'country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number']
 
 class TankerTrailerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
