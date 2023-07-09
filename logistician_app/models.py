@@ -13,6 +13,7 @@ class TrailerType(models.TextChoices):
     INSULATED = "Insulated trailer"
 
 class LoadOrDeliveryPlace(models.Model):
+    company = models.CharField(max_length = 64)
     country = models.CharField(max_length = 64)
     state = models.CharField(max_length = 64)
     town = models.CharField(max_length = 64)
@@ -22,8 +23,8 @@ class LoadOrDeliveryPlace(models.Model):
     contact_number = models.PositiveSmallIntegerField(blank = True, null = True)
 
     def __str__(self):
-        return f"{self.country} - {self.state} - {self.town} {self.postal_code}, st. {self.street} " \
-               f"{self.street_number}, Contact: {self.contact_number}"
+        return f"{self.country} - {self.state} - {self.town} {self.postal_code}, st. {self.street} {self.street_number}." \
+               f" Company: {self.company}, Contact: {self.contact_number}."
 
 class TankerTrailer(models.Model):
     chamber_1 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(7100)])
@@ -34,10 +35,7 @@ class TankerTrailer(models.Model):
 
     def get_volume(self):
         whole_volume = self.chamber_1 + self.chamber_2 + self.chamber_3 + self.chamber_4 + self.chamber_5
-        if whole_volume > 38100:
-            raise ValueError
-        else:
-            return whole_volume
+        return whole_volume
 
     def __str__(self):
         return str(self.get_volume())
@@ -52,11 +50,11 @@ class TransportationOrder(models.Model):
 
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
-            return f"Transportation order date: {self.date} \nLoad place: {self.load_place} \nTanker volume: {self.tanker_volume} " \
+            return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \nTanker volume: {self.tanker_volume}. " \
                    f"\nDelivery place: {self.delivery_place}"
         else:
-            return f"Transportation order date: {self.date} \nLoad place: {self.load_place} \nTrailer: {self.trailer_type} " \
-                   f"\nWeight: {self.load_weight} \nDelivery place: {self.delivery_place}"
+            return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \nTrailer: {self.trailer_type}. " \
+                   f"\nWeight: {self.load_weight}. \nDelivery place: {self.delivery_place}"
 
 
 
