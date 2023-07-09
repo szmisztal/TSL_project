@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+{% block title %} All orders {% endblock %}
+{% block site %}
+    {% for order in orders %}
+        <a href="{% url 'transportation_order-detail' order.id %}">{{ order }}</a><br><br>
+    {% endfor %}
+{% endblock %}

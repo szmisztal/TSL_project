@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+{% block title %} All places {% endblock %}
+{% block site %}
+    {% for place in places %}
+        <a href="{% url 'place-detail' place.id %}">{{ place }}</a><br><br>
+    {% endfor %}
+{% endblock %}
