@@ -1,21 +1,31 @@
 from django.db import transaction
-from django.views import generic
+from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView
 from rest_framework import viewsets
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
-from .forms import OrderForm, PlaceForm, TankerTrailerForm
+
 class TransportationOrderViewSet(viewsets.ModelViewSet):
     serializer_class = TransportationOrderSerializer
+    renderer_classes = [TemplateHTMLRenderer]
 
     def get_queryset(self):
-        orders = TransportationOrder.objects.all().order_by("id")
+        orders = TransportationOrder.objects.all()
         return orders
 
+    def list(self, request):
+        orders = TransportationOrder.objects.all().order_by("id")
+        template_name = "all_orders.html"
+        return Response({"orders": orders}, template_name = template_name)
+
     def retrieve(self, request, *args, **kwargs):
-        order = self.get_object()
+        order_id = kwargs.get("pk")
+        order = get_object_or_404(TransportationOrder, id = order_id)
         serializer = TransportationOrderSerializer(order)
-        return Response(serializer.data)
+        template_name = "order_detail.html"
+        return Response({"serializer": serializer, "order": order}, template_name = template_name)
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -26,7 +36,7 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
                                                    load_place = request.data["load_place"],
                                                    delivery_place = request.data["delivery_place"])
         serializer = TransportationOrderSerializer(order)
-        return Response(serializer.data)
+        return Response(serializer.data, template_name = "create_order")
 
     def update(self, request, *args, **kwargs):
         order = self.get_object()
@@ -46,27 +56,42 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
         return Response("Order deleted")
 
 class LoadOrDeliveryPlaceViewSet(viewsets.ModelViewSet):
-    queryset = LoadOrDeliveryPlace.objects.all()
     serializer_class = LoadOrDeliveryPlaceSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get_queryset(self):
+        places = LoadOrDeliveryPlace.objects.all()
+        return places
+
+    def list(self, request, *args, **kwargs):
+        places = LoadOrDeliveryPlace.objects.all().order_by("id")
+        template_name = "all_places.html"
+        return Response({"places": places}, template_name = template_name)
+
+    def retrieve(self, request, *args, **kwargs):
+        place_id = kwargs.get("pk")
+        place = get_object_or_404(LoadOrDeliveryPlace, id = place_id)
+        serializer = LoadOrDeliveryPlaceSerializer(place)
+        template_name = "place_detail.html"
+        return Response({"serializer": serializer, "place": place}, template_name = template_name)
 
 class TankerTrailerViewSet(viewsets.ModelViewSet):
-    queryset = TankerTrailer.objects.all()
     serializer_class = TankerTrailerSerializer
+    renderer_classes = [TemplateHTMLRenderer]
 
-class NewOrder(generic.CreateView):
-    model = TransportationOrder
-    form_class = OrderForm
-    template_name = "create_order.html"
-    success_url = "index.html"
+    def get_queryset(self):
+        tankers = TankerTrailer.objects.all()
+        return tankers
 
-class NewPlace(generic.CreateView):
-    model = LoadOrDeliveryPlace
-    form_class = PlaceForm
-    template_name = "create_place.html"
-    success_url = "index.html"
+    def list(self, request, *args, **kwargs):
+        tankers = TankerTrailer.objects.all().order_by("id")
+        template_name = "all_tankers.html"
+        return Response({"tankers": tankers}, template_name = template_name)
 
-class NewTanker(generic.CreateView):
-    model = TankerTrailer
-    form_class = TankerTrailerForm
-    template_name = "create_tanker_trailer.html"
-    success_url = "index.html"
+    def retrieve(self, request, *args, **kwargs):
+        tanker_id = kwargs.get("pk")
+        tanker = get_object_or_404(TankerTrailer, id = tanker_id)
+        serializer = TankerTrailerSerializer(tanker)
+        template_name = "tanker_detail.html"
+        return Response({"serializer": serializer, "tanker": tanker}, template_name = template_name)
+
