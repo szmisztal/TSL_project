@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+{% block title %} Order create {% endblock %}
+{% block site %}
+{% block site %}
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}
