@@ -1,13 +1,13 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
 from rest_framework import viewsets
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
 
-class TransportationOrderViewSet(viewsets.ModelViewSet):
+class TransportationOrderViewSet(ListCreateAPIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
 
@@ -15,7 +15,7 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
         orders = TransportationOrder.objects.all()
         return orders
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         orders = TransportationOrder.objects.all().order_by("id")
         template_name = "all_orders.html"
         return Response({"orders": orders}, template_name = template_name)
@@ -36,7 +36,7 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
                                                    load_place = request.data["load_place"],
                                                    delivery_place = request.data["delivery_place"])
         serializer = TransportationOrderSerializer(order)
-        return Response(serializer.data, template_name = "create_order")
+        return Response(serializer.data, template_name = "order_create")
 
     def update(self, request, *args, **kwargs):
         order = self.get_object()
@@ -54,6 +54,9 @@ class TransportationOrderViewSet(viewsets.ModelViewSet):
         order = self.get_object()
         order.delete()
         return Response("Order deleted")
+
+    def get_extra_actions(self):
+        return []
 
 class LoadOrDeliveryPlaceViewSet(viewsets.ModelViewSet):
     serializer_class = LoadOrDeliveryPlaceSerializer
