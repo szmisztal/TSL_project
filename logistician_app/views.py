@@ -1,100 +1,102 @@
 from django.db import transaction
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from rest_framework.generics import ListCreateAPIView
+from django.shortcuts import get_object_or_404, redirect
+from rest_framework import viewsets, status
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
+from .forms import OrderForm
 
-class TransportationOrderViewSet(ListCreateAPIView):
+class TransportationOrderListView(ListAPIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
-
-    def get_queryset(self):
-        orders = TransportationOrder.objects.all()
-        return orders
+    template_name = "orders_list.html"
 
     def list(self, request, *args, **kwargs):
         orders = TransportationOrder.objects.all().order_by("id")
-        template_name = "all_orders.html"
-        return Response({"orders": orders}, template_name = template_name)
+        return Response({"serializer": self.serializer_class(orders), "orders": orders},
+                        template_name = self.template_name)
+
+class TransportationOrderRetrieveView(RetrieveAPIView):
+    serializer_class = TransportationOrderSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "order_retrieve.html"
 
     def retrieve(self, request, *args, **kwargs):
         order_id = kwargs.get("pk")
         order = get_object_or_404(TransportationOrder, id = order_id)
-        serializer = TransportationOrderSerializer(order)
-        template_name = "order_detail.html"
-        return Response({"serializer": serializer, "order": order}, template_name = template_name)
+        return Response({"serializer": self.serializer_class(order), "order": order},
+                        template_name = self.template_name)
+
+class TransportationOrderCreateView(CreateAPIView):
+    form_class = OrderForm
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "order_form.html"
+
+    def get(self, request):
+        form = self.form_class()
+        return Response({"form": form}, template_name = self.template_name)
 
     @transaction.atomic
-    def create(self, request, *args, **kwargs):
-        order = TransportationOrder.objects.create(date = request.data["date"],
-                                                   trailer_type = request.data["trailer_type"],
-                                                   tanker_volume = request.data["tanker_volume"],
-                                                   load_weight = request.data["load_weight"],
-                                                   load_place = request.data["load_place"],
-                                                   delivery_place = request.data["delivery_place"])
-        serializer = TransportationOrderSerializer(order)
-        return Response(serializer.data, template_name = "order_create")
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            order = form.save()
+            return redirect('order-retrieve', pk = order.pk)
+        return Response({"form": form}, template_name = self.template_name)
 
-    def update(self, request, *args, **kwargs):
+class TransportationOrderUpdateView(UpdateAPIView):
+    queryset = TransportationOrder.objects.all()
+    serializer_class = TransportationOrderSerializer
+    form_class = OrderForm
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "order_form.html"
+
+    def get(self, request, *args, **kwargs):
         order = self.get_object()
-        order.date = request.data["date"]
-        order.trailer_type = request.data["trailer_type"]
-        order.tanker_volume = request.data["tanker_volume"]
-        order.load_weight = request.data["load_weight"]
-        order.load_place = request.data["load_place"]
-        order.delivery_place = request.data["delivery_place"]
-        order.save()
-        serializer =TransportationOrderSerializer(order)
-        return Response(serializer.data)
+        form = self.form_class(instance = order)
+        return Response({"serializer": self.serializer_class(order), "form": form, "order": order},
+                        template_name = self.template_name)
 
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        order = self.get_object()
+        form = self.form_class(request.POST, instance = order)
+        if form.is_valid():
+            form.save()
+            return redirect("orders-list")
+        else:
+            return Response({"serializer": self.serializer_class(order), "form": form, "order": order},
+                            template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
+
+class TransportationOrderDestroyView(DestroyAPIView):
+    queryset = TransportationOrder.objects.all()
+    serializer_class = TransportationOrderSerializer
+    form_class = OrderForm
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "order_delete.html"
+
+    def get(self, request, *args, **kwargs):
+        order = self.get_object()
+        form = self.form_class(instance = order)
+        return Response({"serializer": self.serializer_class(order), "form": form, "order": order},
+                        template_name = self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        order = self.get_object()
+        form = self.form_class(request.POST, instance = order)
+        if form.is_valid():
+            form.save()
+            return redirect("orders-list")
+        else:
+            return Response({"serializer": self.serializer_class(order), "form": form, "order": order},
+                            template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
     def destroy(self, request, *args, **kwargs):
-        order = self.get_object()
-        order.delete()
-        return Response("Order deleted")
+        order_id = kwargs.get("pk")
+        order = get_object_or_404(TransportationOrder, id = order_id)
+        self.perform_destroy(order)
+        return Response(status = status.HTTP_204_NO_CONTENT)
 
-    def get_extra_actions(self):
-        return []
 
-class LoadOrDeliveryPlaceViewSet(viewsets.ModelViewSet):
-    serializer_class = LoadOrDeliveryPlaceSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-
-    def get_queryset(self):
-        places = LoadOrDeliveryPlace.objects.all()
-        return places
-
-    def list(self, request, *args, **kwargs):
-        places = LoadOrDeliveryPlace.objects.all().order_by("id")
-        template_name = "all_places.html"
-        return Response({"places": places}, template_name = template_name)
-
-    def retrieve(self, request, *args, **kwargs):
-        place_id = kwargs.get("pk")
-        place = get_object_or_404(LoadOrDeliveryPlace, id = place_id)
-        serializer = LoadOrDeliveryPlaceSerializer(place)
-        template_name = "place_detail.html"
-        return Response({"serializer": serializer, "place": place}, template_name = template_name)
-
-class TankerTrailerViewSet(viewsets.ModelViewSet):
-    serializer_class = TankerTrailerSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-
-    def get_queryset(self):
-        tankers = TankerTrailer.objects.all()
-        return tankers
-
-    def list(self, request, *args, **kwargs):
-        tankers = TankerTrailer.objects.all().order_by("id")
-        template_name = "all_tankers.html"
-        return Response({"tankers": tankers}, template_name = template_name)
-
-    def retrieve(self, request, *args, **kwargs):
-        tanker_id = kwargs.get("pk")
-        tanker = get_object_or_404(TankerTrailer, id = tanker_id)
-        serializer = TankerTrailerSerializer(tanker)
-        template_name = "tanker_detail.html"
-        return Response({"serializer": serializer, "tanker": tanker}, template_name = template_name)
 
