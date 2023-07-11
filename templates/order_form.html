@@ -6,4 +6,7 @@
     {{ form }}
     <button type="submit">Save</button>
   </form>
+  {% if order.id %}
+    <a href="{% url 'order-destroy' order.id %}">Delete</a>
+  {% endif %}
 {% endblock %}
