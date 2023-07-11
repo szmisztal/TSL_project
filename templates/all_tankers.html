@@ -1,7 +1,0 @@
-{% extends 'index.html' %}
-{% block title %} All tankers {% endblock %}
-{% block site %}
-    {% for tanker in tankers %}
-        <a href="{% url 'tanker-detail' tanker.id %}">{{ tanker }}</a><br><br>
-    {% endfor %}
-{% endblock %}
