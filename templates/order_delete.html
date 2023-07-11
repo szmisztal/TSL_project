@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block title %} Order destroy {% endblock %}
+{% block site %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <p>Do you really want to delete this order ?</p>
+        <br>
+        <button type="submit">Delete</button>  <a href="{% url 'order-retrieve' order.id %}">No</a>
+    </form>
+{% endblock %}
