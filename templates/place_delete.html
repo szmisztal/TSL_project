@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+{% block title %} Place destroy {% endblock %}
+{% block site %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Do you really want to delete this place ?</p><br>
+        <button type="submit">Delete</button>
+        <button type="submit"><a href="{% url 'place-update' place.id %}">No</a></button>
+    </form>
+{% endblock %}

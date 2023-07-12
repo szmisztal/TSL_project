@@ -8,6 +8,16 @@
     <title>{% block title %} Index {% endblock %}</title>
 </head>
 <body>
+    {% if messages %}
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    {% endif %}<br>
+    <a href="{% url 'homepage' %}">Homepage</a><br><br>
+    <a href="{% url 'orders-list' %}">Transportation orders list</a><br>
+    <a href="{% url 'order-create' %}">Create new transportation order</a><br><br>
+    <a href="{% url 'places-list' %}">Load/Delivery places list</a><br>
+    <a href="{% url 'place-create' %}">Create new load/delivery place</a><br><br><br><br>
     {% block site %} {% endblock %}
 </body>
 </html>

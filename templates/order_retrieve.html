@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 {% block title %} Order retrieve {% endblock %}
 {% block site %}
-    {{ order }}
-   <a href="{% url 'order-update' order.id %}">Edit or delete order</a>
+    {{ order }}<br><br>
+    <button type="submit"><a href="{% url 'order-update' order.id %}">Edit or delete order</a></button>
 {% endblock %}

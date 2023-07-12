@@ -1,0 +1,6 @@
+{% extends 'index.html' %}
+{% block title %} Place retrieve {% endblock %}
+{% block site %}
+    {{ place }}<br><br>
+    <button type="submit"><a href="{% url 'place-update' place.id %}">Edit or delete place</a></button>
+{% endblock %}

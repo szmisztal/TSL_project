@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+{% block title %} Places list {% endblock %}
+{% block site %}
+    {% for place in places %}
+        <a href="{% url 'place-retrieve' place.id %}">{{ place }}</a><br><br>
+    {% endfor %}
+{% endblock %}

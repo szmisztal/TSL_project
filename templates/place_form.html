@@ -1,12 +1,12 @@
 {% extends 'index.html' %}
-{% block title %} Order form {% endblock %}
+{% block title %} Place form {% endblock %}
 {% block site %}
   <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save</button>
   </form>
-  {% if order.id %}
-    <button type="submit"><a href="{% url 'order-destroy' order.id %}">Delete</a></button>
+  {% if place.id %}
+    <button type="submit"><a href="{% url 'place-destroy' place.id %}">Delete</a></button>
   {% endif %}
 {% endblock %}
