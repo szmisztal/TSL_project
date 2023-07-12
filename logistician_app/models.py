@@ -13,7 +13,7 @@ class TrailerType(models.TextChoices):
     INSULATED = "Insulated trailer"
 
 class LoadOrDeliveryPlace(models.Model):
-    company = models.CharField(max_length = 64)
+    company = models.CharField(max_length = 64, unique = True)
     country = models.CharField(max_length = 64)
     state = models.CharField(max_length = 64)
     town = models.CharField(max_length = 64)
