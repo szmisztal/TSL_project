@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+{% block title %} Tanker destroy {% endblock %}
+{% block site %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Do you really want to delete this tanker trailer object ?</p><br>
+        <button type="submit">Delete</button>
+        <button type="submit"><a href="{% url 'tanker-update' tanker.id %}">No</a></button>
+    </form>
+{% endblock %}
