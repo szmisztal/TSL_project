@@ -1,5 +1,5 @@
 from django import forms
-from .models import TransportationOrder, LoadOrDeliveryPlace
+from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 
 class OrderForm(forms.ModelForm):
     class Meta:
@@ -10,3 +10,8 @@ class PlaceForm(forms.ModelForm):
     class Meta:
         model = LoadOrDeliveryPlace
         fields = ['company', 'country', 'state', 'town', 'postal_code', 'street', 'street_number', 'contact_number']
+
+class TankerForm(forms.ModelForm):
+    class Meta:
+        model = TankerTrailer
+        fields = ['chamber_1', 'chamber_2', 'chamber_3', 'chamber_4', 'chamber_5']
