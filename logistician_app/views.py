@@ -42,6 +42,8 @@ class TransportationOrderCreateView(CreateAPIView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        TransportationOrder.place_restrict(load_place_id = TransportationOrder.load_place_id,
+                                           delivery_place_id = TransportationOrder.delivery_place_id)
         if form.is_valid():
             form.save()
             messages.success(self.request, "Transportation order created successfully.")
@@ -231,7 +233,7 @@ class TankerUpdateView(UpdateAPIView):
         if form.is_valid():
             form.save()
             messages.success(self.request, "Tanker trailer volumes updated successfully.")
-            return redirect("order-create")
+            return redirect("orders-list")
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
