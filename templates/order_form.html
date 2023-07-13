@@ -6,6 +6,8 @@
     {{ form.as_p }}
     <button type="submit">Save</button>
   </form>
+  <p>If you want to create new load/delivery place visit: <a href="{% url 'place-create' %}">"Add new place"</a>, and try again.</p>
+  <p>If you have to add order for tanker trailers visit: <a href="{% url 'tanker-create' %}">"Set up volumes"</a>, and set up volumes for tanker chambers.</p>
   {% if order.id %}
     <button type="submit"><a href="{% url 'order-destroy' order.id %}">Delete</a></button>
   {% endif %}
