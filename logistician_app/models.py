@@ -48,6 +48,10 @@ class TransportationOrder(models.Model):
     load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order load+")
     delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
 
+    def place_restrict(self, load_place_id, delivery_place_id):
+        if load_place_id == delivery_place_id:
+            raise ValueError("Load place cannot be the same as delivery place.")
+
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
             return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \nTanker volume: {self.tanker_volume}. " \
