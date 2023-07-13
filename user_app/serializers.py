@@ -13,7 +13,7 @@ def create_auth_token(sender, instance = None, created = False, **kwargs):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'password', 'email')
+        fields = ['id', 'username', 'password', 'email', 'role']
         extra_kwargs = {
             'password': {'required': True, 'write_only': True},
         }
