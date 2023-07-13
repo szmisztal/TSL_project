@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 
 class UserRole(models.TextChoices):
     LOGISTICIAN = "Logistician"
@@ -11,5 +11,39 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(max_length = 16)
     last_name = models.CharField(max_length = 16)
     email = models.EmailField(blank = True, null = True)
-    phone_number = models.PositiveSmallIntegerField(blank = True, null = True)
+    phone_number = models.PositiveSmallIntegerField(unique = True)
     role = models.CharField(max_length = 16, choices = UserRole.choices)
+
+    def set_group(self):
+        if self.role == UserRole.LOGISTICIAN:
+            group = LogisticianGroup.objects.get(name = "Logistician group")
+        elif self.role == UserRole.DISPATCHER:
+            group = DispatcherGroup.objects.get(name = "Dispatcher group")
+        elif self.role == UserRole.DRIVER:
+            group = DriverGroup.objects.get(name = "Driver group")
+        else:
+            group = None
+
+        if group:
+            self.groups.add(group)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.role}, phone: {self.phone_number}, mail: {self.email}"
+
+class LogisticianGroup(Group):
+    name = "Logisticians group"
+
+    def __str__(self):
+        return {self.name}
+
+class DispatcherGroup(Group):
+    name = "Dispatchers group"
+
+    def __str__(self):
+        return {self.name}
+
+class DriverGroup(Group):
+    name = "Drivers group"
+
+    def __str__(self):
+        return {self.name}
