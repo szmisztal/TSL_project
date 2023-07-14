@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -10,6 +12,7 @@ from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
 from .forms import OrderForm, PlaceForm, TankerForm
 
+@method_decorator(login_required, name = "dispatch")
 class TransportationOrderListView(ListAPIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -20,6 +23,7 @@ class TransportationOrderListView(ListAPIView):
         return Response({"serializer": self.serializer_class(orders), "orders": orders},
                         template_name = self.template_name)
 
+@method_decorator(login_required, name = "dispatch")
 class TransportationOrderRetrieveView(RetrieveAPIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -31,6 +35,7 @@ class TransportationOrderRetrieveView(RetrieveAPIView):
         return Response({"serializer": self.serializer_class(order), "order": order},
                         template_name = self.template_name)
 
+@method_decorator(login_required, name = "dispatch")
 class TransportationOrderCreateView(CreateAPIView):
     form_class = OrderForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -68,6 +73,7 @@ class TransportationOrderCreateView(CreateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(login_required, name = "dispatch")
 class TransportationOrderUpdateView(UpdateAPIView):
     queryset = TransportationOrder.objects.all()
     serializer_class = TransportationOrderSerializer
@@ -110,6 +116,7 @@ class TransportationOrderUpdateView(UpdateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(login_required, name = "dispatch")
 class TransportationOrderDestroyView(DestroyAPIView):
     queryset = TransportationOrder.objects.all()
     serializer_class = TransportationOrderSerializer
@@ -127,6 +134,7 @@ class TransportationOrderDestroyView(DestroyAPIView):
         messages.success(self.request, "Transportation order deleted successfully.")
         return redirect("orders-list")
 
+@method_decorator(login_required, name = "dispatch")
 class PlaceListView(ListAPIView):
     serializer_class = LoadOrDeliveryPlaceSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -137,6 +145,7 @@ class PlaceListView(ListAPIView):
         return Response({"serializer": self.serializer_class(places), "places": places},
                         template_name = self.template_name)
 
+@method_decorator(login_required, name = "dispatch")
 class PlaceRetrieveView(RetrieveAPIView):
     serializer_class = LoadOrDeliveryPlaceSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -148,6 +157,7 @@ class PlaceRetrieveView(RetrieveAPIView):
         return Response({"serializer": self.serializer_class(place), "place": place},
                         template_name = self.template_name)
 
+@method_decorator(login_required, name = "dispatch")
 class PlaceCreateView(CreateAPIView):
     form_class = PlaceForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -167,6 +177,7 @@ class PlaceCreateView(CreateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(login_required, name = "dispatch")
 class PlaceUpdateView(UpdateAPIView):
     queryset = LoadOrDeliveryPlace.objects.all()
     serializer_class = LoadOrDeliveryPlaceSerializer
@@ -191,6 +202,7 @@ class PlaceUpdateView(UpdateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(login_required, name = "dispatch")
 class PlaceDestroyView(DestroyAPIView):
     queryset = LoadOrDeliveryPlace.objects.all()
     serializer_class = LoadOrDeliveryPlaceSerializer
@@ -208,6 +220,7 @@ class PlaceDestroyView(DestroyAPIView):
         messages.success(self.request, "Place deleted successfully.")
         return redirect("places-list")
 
+@method_decorator(login_required, name = "dispatch")
 class TankerListView(ListAPIView):
     serializer_class = TankerTrailerSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -218,6 +231,7 @@ class TankerListView(ListAPIView):
         return Response({"serializer": self.serializer_class(tankers), "tankers": tankers},
                         template_name = self.template_name)
 
+@method_decorator(login_required, name = "dispatch")
 class TankerRetrieveView(RetrieveAPIView):
     serializer_class = TankerTrailerSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -229,6 +243,7 @@ class TankerRetrieveView(RetrieveAPIView):
         return Response({"serializer": self.serializer_class(tanker), "tanker": tanker},
                         template_name = self.template_name)
 
+@method_decorator(login_required, name = "dispatch")
 class TankerCreateView(CreateAPIView):
     form_class = TankerForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -248,6 +263,7 @@ class TankerCreateView(CreateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(login_required, name = "dispatch")
 class TankerUpdateView(UpdateAPIView):
     queryset = TankerTrailer.objects.all()
     serializer_class = TankerTrailerSerializer
@@ -272,6 +288,7 @@ class TankerUpdateView(UpdateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(login_required, name = "dispatch")
 class TankerDestroyView(DestroyAPIView):
     queryset = TankerTrailer.objects.all()
     serializer_class = TankerTrailerSerializer
