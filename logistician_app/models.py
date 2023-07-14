@@ -51,6 +51,9 @@ class TransportationOrder(models.Model):
     def place_restrict(self, load_place_id, delivery_place_id):
         if load_place_id == delivery_place_id:
             raise ValueError("Load place cannot be the same as delivery place.")
+    def empty_tanker_volume(self):
+        if self.trailer_type == "Tanker trailer" and self.tanker_volume == None:
+            raise ValueError("Order for tanker trailer must have tanker chamber volumes set up.")
 
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
