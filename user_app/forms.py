@@ -1,7 +1,5 @@
 from django import forms
-from .models import CustomUser
 
-class UserForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number', 'role']
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length = 64)
+    password = forms.CharField(max_length = 64, widget = forms.PasswordInput)
