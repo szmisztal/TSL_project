@@ -27,10 +27,10 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -89,6 +89,10 @@ PASSWORD_HASHERS = [
 ]
 
 AUTH_USER_MODEL = 'user_app.CustomUser'
+
+LOGIN_URL = '/users/login/'
+
+LOGIN_REDIRECT_URL = '/users/login/'
 
 LANGUAGE_CODE = 'en-us'
 
