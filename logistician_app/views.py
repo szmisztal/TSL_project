@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -42,10 +43,26 @@ class TransportationOrderCreateView(CreateAPIView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        TransportationOrder.place_restrict(load_place_id = TransportationOrder.load_place_id,
-                                           delivery_place_id = TransportationOrder.delivery_place_id)
         if form.is_valid():
-            form.save()
+            order = form.save(commit = False)
+            load_place_id = order.load_place_id
+            delivery_place_id = order.delivery_place_id
+            try:
+                order.place_restrict(load_place_id = load_place_id, delivery_place_id = delivery_place_id)
+                order.empty_tanker_volume()
+            except ValueError as e:
+                messages.error(self.request, str(e))
+                form.initial = form.cleaned_data
+                return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
+
+            try:
+                order.full_clean()
+            except ValidationError as e:
+                messages.error(self.request, str(e))
+                form.initial = form.cleaned_data
+                return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
+
+            order.save()
             messages.success(self.request, "Transportation order created successfully.")
             return redirect("orders-list")
         else:
@@ -69,7 +86,25 @@ class TransportationOrderUpdateView(UpdateAPIView):
         order = self.get_object()
         form = self.form_class(request.POST, instance = order)
         if form.is_valid():
-            form.save()
+            order = form.save(commit = False)
+            load_place_id = order.load_place_id
+            delivery_place_id = order.delivery_place_id
+            try:
+                order.place_restrict(load_place_id = load_place_id, delivery_place_id = delivery_place_id)
+                order.empty_tanker_volume()
+            except ValueError as e:
+                messages.error(self.request, str(e))
+                form.initial = form.cleaned_data
+                return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
+
+            try:
+                order.full_clean()
+            except ValidationError as e:
+                messages.error(self.request, str(e))
+                form.initial = form.cleaned_data
+                return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
+
+            order.save()
             messages.success(self.request, "Transportation order updated successfully.")
             return redirect("orders-list")
         else:
