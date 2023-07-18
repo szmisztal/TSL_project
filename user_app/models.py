@@ -9,6 +9,24 @@ class UserRole(models.TextChoices):
     DISPATCHER = "Dispatcher"
     DRIVER = "Driver"
 
+class LogisticiansGroup(Group):
+    name = "Logisticians group"
+
+    def __str__(self):
+        return self.name
+
+class DispatchersGroup(Group):
+    name = "Dispatchers group"
+
+    def __str__(self):
+        return self.name
+
+class DriversGroup(Group):
+    name = "Drivers group"
+
+    def __str__(self):
+        return self.name
+
 class CustomUser(AbstractUser):
     username = models.CharField(max_length = 32, unique = True)
     first_name = models.CharField(max_length = 16)
@@ -18,14 +36,13 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length = 16, choices = UserRole.choices)
 
     def set_group(self):
+        group = None
         if self.role == UserRole.LOGISTICIAN:
-            group = LogisticianGroup.objects.get(name = "Logistician group")
-        elif self.role == UserRole.DISPATCHER:
-            group = DispatcherGroup.objects.get(name = "Dispatcher group")
-        elif self.role == UserRole.DRIVER:
-            group = DriverGroup.objects.get(name = "Driver group")
-        else:
-            group = None
+            group = Group.objects.get(name = "Logisticians group")
+        if self.role == UserRole.DISPATCHER:
+            group = Group.objects.get(name = "Dispatchers group")
+        if self.role == UserRole.DRIVER:
+            group = Group.objects.get(name = "Drivers group")
 
         if group:
             self.groups.add(group)
@@ -37,21 +54,3 @@ class CustomUser(AbstractUser):
 def create_auth_token(sender, instance = None, created = False, **kwargs):
     if created:
         Token.objects.create(user = instance)
-
-class LogisticianGroup(Group):
-    name = "Logisticians group"
-
-    def __str__(self):
-        return {self.name}
-
-class DispatcherGroup(Group):
-    name = "Dispatchers group"
-
-    def __str__(self):
-        return {self.name}
-
-class DriverGroup(Group):
-    name = "Drivers group"
-
-    def __str__(self):
-        return {self.name}
