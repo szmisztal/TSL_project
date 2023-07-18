@@ -14,6 +14,7 @@ def sign_up(request):
             user = form.save(commit = False)
             user.username = user.username.lower()
             user.save()
+            user.set_group()
             messages.success(request, "Registration success, you can log in now.")
             return redirect("login")
         else:
@@ -21,7 +22,7 @@ def sign_up(request):
 
 def sign_in(request):
     template_name = "login.html"
-    next_url = request.GET.get('next')
+    next_url = request.GET.get("next")
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
