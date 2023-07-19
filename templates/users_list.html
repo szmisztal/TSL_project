@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+{% block title %} Users list {% endblock %}
+{% block site %}
+    {% for user in users %}
+        {{ user }}<br><br>
+    {% endfor %}
+{% endblock %}
