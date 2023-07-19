@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from user_app.models import CustomUser
+from .managers import DriverIsNullManager
 import datetime
 
 class TrailerType(models.TextChoices):
@@ -47,10 +49,16 @@ class TransportationOrder(models.Model):
     load_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(24000)])
     load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order load+")
     delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
+    driver = models.ForeignKey(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
+                               related_name = "assigned_order+", null = True, blank = True)
+
+    objects = models.Manager()
+    unassigned_orders = DriverIsNullManager()
 
     def place_restrict(self, load_place_id, delivery_place_id):
         if load_place_id == delivery_place_id:
             raise ValueError("Load place cannot be the same as delivery place.")
+
     def empty_tanker_volume(self):
         if self.trailer_type == "Tanker trailer" and self.tanker_volume == None:
             raise ValueError("Order for tanker trailer must have tanker chamber volumes set up.")
