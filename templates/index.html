@@ -25,7 +25,10 @@
     <a href="{% url 'order-create' %}">Create new transportation order</a><br><br>
     <a href="{% url 'places-list' %}">Load/Delivery places list</a><br>
     <a href="{% url 'place-create' %}">Create new load/delivery place</a><br><br>
-    <a href="{% url 'tankers-list' %}">Tanker trailer orders list</a><br><br><br>
+    <a href="{% url 'tankers-list' %}">Tanker trailer orders list</a><br><br>
+    <a href="{% url 'users-list' %}">Users list</a><br><br>
+    <a href="{% url 'assign-order' %}">Assign order</a><br>
+    <a href="{% url 'assigned-orders-list' %}">Assigned orders list</a><br><br>
     {% endif %}
     {% block site %} {% endblock %}
 </body>
