@@ -21,6 +21,7 @@ media
 .idea/**/aws.xml
 
 # Generated files
+.idea/
 .idea/**/contentModel.xml
 
 # Sensitive or high-churn files
@@ -104,6 +105,9 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
+
+# Migrations
+migrations/
 
 # mkdocs documentation 
 /site 
