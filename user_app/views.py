@@ -1,7 +1,25 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from rest_framework.generics import ListAPIView
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from .models import CustomUser
+from .serializers import UserSerializer
 from .forms import LoginForm, RegisterForm
+
+@method_decorator(login_required, name = "dispatch")
+class UsersListView(ListAPIView):
+    serializer_class = UserSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "users_list.html"
+
+    def get(self, request, *args, **kwargs):
+        users = CustomUser.objects.all().order_by("role")
+        return Response({"serializer": self.serializer_class(users), "users": users},
+                        template_name = self.template_name)
 
 def sign_up(request):
     template_name = "register.html"
