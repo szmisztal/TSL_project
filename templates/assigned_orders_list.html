@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+{% block title %} Assigned orders list {% endblock %}
+{% block site %}
+    {% for order in orders %}
+        {{ order.driver }} - {{ order.date}}: {{ order.load_place }} - {{ order.delivery_place }}<br><br>
+    {% endfor %}
+{% endblock %}
