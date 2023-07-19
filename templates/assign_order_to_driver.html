@@ -1,0 +1,9 @@
+{% extends 'index.html' %}
+{% block title %} Assign order to driver {% endblock %}
+{% block site %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Assign</button>
+    </form>
+{% endblock %}
