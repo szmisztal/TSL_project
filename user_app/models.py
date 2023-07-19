@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, Group
 from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from .managers import DriverManager
 
 class UserRole(models.TextChoices):
     LOGISTICIAN = "Logistician"
@@ -34,6 +35,9 @@ class CustomUser(AbstractUser):
     email = models.EmailField(blank = True, null = True, unique = True)
     phone_number = models.PositiveSmallIntegerField(unique = True)
     role = models.CharField(max_length = 16, choices = UserRole.choices)
+
+    objects = models.Manager()
+    drivers = DriverManager()
 
     def set_group(self):
         group = None
