@@ -6,4 +6,3 @@ class AssignForm(forms.Form):
     driver = forms.ModelChoiceField(queryset = CustomUser.drivers.all(), empty_label = "Select a driver")
     order = forms.ModelChoiceField(queryset = TransportationOrder.unassigned_orders.all(), empty_label = "Select a order")
 
-
