@@ -21,7 +21,7 @@ def assign_order_to_driver(request):
             try:
                 order.driver = driver
                 order.save()
-                return redirect("assign-order")
+                return redirect("assign-orders-list")
             except Exception as e:
                 messages.error(request, str(e))
     else:
