@@ -2,6 +2,6 @@
 {% block title %} Assigned orders list {% endblock %}
 {% block site %}
     {% for order in orders %}
-        {{ order.driver }} - {{ order.date}}: {{ order.load_place }} - {{ order.delivery_place }}<br><br>
+        <a href="{% url 'assign-update' pk=order.id %}">{{ order.driver.first_name }} {{ order.driver.last_name }}, phone: {{ order.driver.phone_number }} - {{ order.date}}. LOAD: {{ order.load_place }} - DELIVERY: {{ order.delivery_place }}</a><br><br>
     {% endfor %}
 {% endblock %}
