@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from user_app.models import CustomUser
-from .managers import DriverIsNullManager
 import datetime
 
 class TrailerType(models.TextChoices):
@@ -40,7 +39,7 @@ class TankerTrailer(models.Model):
         return whole_volume
 
     def __str__(self):
-        return str(self.get_volume())
+        return "Tanker trailer volume:" + str(self.get_volume())
 
 class TransportationOrder(models.Model):
     date = models.DateField(default = datetime.date.today, validators = [MinValueValidator(datetime.date.today)])
@@ -49,11 +48,8 @@ class TransportationOrder(models.Model):
     load_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(24000)])
     load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order load+")
     delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
-    driver = models.ForeignKey(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
+    driver = models.OneToOneField(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
                                related_name = "assigned_order+", null = True, blank = True)
-
-    objects = models.Manager()
-    unassigned_orders = DriverIsNullManager()
 
     def place_restrict(self, load_place_id, delivery_place_id):
         if load_place_id == delivery_place_id:
@@ -65,7 +61,7 @@ class TransportationOrder(models.Model):
 
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
-            return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \nTanker volume: {self.tanker_volume}. " \
+            return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \n{self.tanker_volume}. " \
                    f"\nDelivery place: {self.delivery_place}"
         else:
             return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \nTrailer: {self.trailer_type}. " \
