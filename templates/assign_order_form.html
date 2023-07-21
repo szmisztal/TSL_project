@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 {% block title %} Assign order to driver {% endblock %}
 {% block site %}
+    {{ order }}
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
