@@ -4,9 +4,9 @@
     {% for order in orders %}
         <a href="{% url 'make-assign' order.id %}">
             {% if order.driver %}
-                {{ order.driver.first_name }} {{ order.driver.last_name }}, phone: {{ order.driver.phone_number }} -
+                DRIVER: {{ order.driver.first_name }} {{ order.driver.last_name }}, phone: {{ order.driver.phone_number }} -
             {% endif %}
-            {{ order.date}}. LOAD: {{ order.load_place }} - DELIVERY: {{ order.delivery_place }}
+            DATE: {{ order.date}}. LOAD: {{ order.load_place }} - DELIVERY: {{ order.delivery_place }}
         </a><br><br>
     {% endfor %}
 {% endblock %}
