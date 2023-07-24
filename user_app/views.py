@@ -46,7 +46,7 @@ def sign_in(request):
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
-            user = authenticate(request, username = username, password=  password)
+            user = authenticate(request, username = username, password = password)
             if user:
                 login(request, user)
                 messages.success(request, "You're logged in.")
