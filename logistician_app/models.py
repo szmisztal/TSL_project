@@ -50,6 +50,7 @@ class TransportationOrder(models.Model):
     delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
     driver = models.OneToOneField(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
                                related_name = "assigned_order+", null = True, blank = True)
+    done = models.BooleanField(default = False, null = True, blank = True)
 
     def place_restrict(self, load_place_id, delivery_place_id):
         if load_place_id == delivery_place_id:
@@ -61,11 +62,11 @@ class TransportationOrder(models.Model):
 
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
-            return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \n{self.tanker_volume}. " \
-                   f"\nDelivery place: {self.delivery_place}"
+            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} {self.tanker_volume}. " \
+                   f"DELIVERY PLACE: {self.delivery_place}"
         else:
-            return f"Transportation order date: {self.date}, \nLoad place: {self.load_place} \nTrailer: {self.trailer_type}. " \
-                   f"\nWeight: {self.load_weight}. \nDelivery place: {self.delivery_place}"
+            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} TRAILER: {self.trailer_type}. " \
+                   f"WEIGHT: {self.load_weight}. DELIVERY PLACE: {self.delivery_place}"
 
 
 
