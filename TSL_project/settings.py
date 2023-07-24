@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'user_app',
     'logistician_app',
     'dispatcher_app',
+    'driver_app'
 ]
 
 REST_FRAMEWORK = {
