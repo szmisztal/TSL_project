@@ -1,16 +1,19 @@
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes
+from user_app.permissions import IsDispatcher
 from logistician_app.serializers import TransportationOrderSerializer
 from logistician_app.models import TransportationOrder
 from .forms import AssignForm
 
 @login_required
+@permission_classes([IsDispatcher])
 @transaction.atomic
 def assign_order_to_driver(request, pk):
     try:
@@ -33,6 +36,7 @@ def assign_order_to_driver(request, pk):
     return render(request, "assign_order_form.html", {"form": form, "order": order})
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsDispatcher])
 class OrdersListView(APIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
