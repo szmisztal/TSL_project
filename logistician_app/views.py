@@ -8,11 +8,14 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.decorators import permission_classes
+from user_app.permissions import IsLogistician
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
 from .forms import OrderForm, PlaceForm, TankerForm
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TransportationOrderListView(ListAPIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -24,6 +27,7 @@ class TransportationOrderListView(ListAPIView):
                         template_name = self.template_name)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TransportationOrderRetrieveView(RetrieveAPIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -36,6 +40,7 @@ class TransportationOrderRetrieveView(RetrieveAPIView):
                         template_name = self.template_name)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TransportationOrderCreateView(CreateAPIView):
     form_class = OrderForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -74,6 +79,7 @@ class TransportationOrderCreateView(CreateAPIView):
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TransportationOrderUpdateView(UpdateAPIView):
     queryset = TransportationOrder.objects.all()
     serializer_class = TransportationOrderSerializer
@@ -117,6 +123,7 @@ class TransportationOrderUpdateView(UpdateAPIView):
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TransportationOrderDestroyView(DestroyAPIView):
     queryset = TransportationOrder.objects.all()
     serializer_class = TransportationOrderSerializer
@@ -135,6 +142,7 @@ class TransportationOrderDestroyView(DestroyAPIView):
         return redirect("orders-list")
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class PlaceListView(ListAPIView):
     serializer_class = LoadOrDeliveryPlaceSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -146,6 +154,7 @@ class PlaceListView(ListAPIView):
                         template_name = self.template_name)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class PlaceRetrieveView(RetrieveAPIView):
     serializer_class = LoadOrDeliveryPlaceSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -158,6 +167,7 @@ class PlaceRetrieveView(RetrieveAPIView):
                         template_name = self.template_name)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class PlaceCreateView(CreateAPIView):
     form_class = PlaceForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -178,6 +188,7 @@ class PlaceCreateView(CreateAPIView):
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class PlaceUpdateView(UpdateAPIView):
     queryset = LoadOrDeliveryPlace.objects.all()
     serializer_class = LoadOrDeliveryPlaceSerializer
@@ -203,6 +214,7 @@ class PlaceUpdateView(UpdateAPIView):
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class PlaceDestroyView(DestroyAPIView):
     queryset = LoadOrDeliveryPlace.objects.all()
     serializer_class = LoadOrDeliveryPlaceSerializer
@@ -221,6 +233,7 @@ class PlaceDestroyView(DestroyAPIView):
         return redirect("places-list")
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TankerListView(ListAPIView):
     serializer_class = TankerTrailerSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -232,6 +245,7 @@ class TankerListView(ListAPIView):
                         template_name = self.template_name)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TankerRetrieveView(RetrieveAPIView):
     serializer_class = TankerTrailerSerializer
     renderer_classes = [TemplateHTMLRenderer]
@@ -244,6 +258,7 @@ class TankerRetrieveView(RetrieveAPIView):
                         template_name = self.template_name)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TankerCreateView(CreateAPIView):
     form_class = TankerForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -264,6 +279,7 @@ class TankerCreateView(CreateAPIView):
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TankerUpdateView(UpdateAPIView):
     queryset = TankerTrailer.objects.all()
     serializer_class = TankerTrailerSerializer
@@ -289,6 +305,7 @@ class TankerUpdateView(UpdateAPIView):
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
 class TankerDestroyView(DestroyAPIView):
     queryset = TankerTrailer.objects.all()
     serializer_class = TankerTrailerSerializer
