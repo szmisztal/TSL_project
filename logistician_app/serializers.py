@@ -20,7 +20,7 @@ class TransportationOrderSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TransportationOrder
-        fields = ['id', 'date', 'trailer_type', 'load_place', 'tanker_volume', 'load_weight', 'delivery_place', 'driver']
+        fields = ['id', 'date', 'trailer_type', 'load_place', 'tanker_volume', 'load_weight', 'delivery_place', 'driver', 'done']
 
 
 
