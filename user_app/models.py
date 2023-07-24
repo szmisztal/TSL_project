@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group
-from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import AbstractUser, Group, UserManager
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 from .managers import DriverManager
 
 class UserRole(models.TextChoices):
@@ -36,7 +36,7 @@ class CustomUser(AbstractUser):
     phone_number = models.PositiveSmallIntegerField(unique = True)
     role = models.CharField(max_length = 16, choices = UserRole.choices)
 
-    objects = models.Manager()
+    objects = UserManager()
     drivers = DriverManager()
 
     def set_group(self):
