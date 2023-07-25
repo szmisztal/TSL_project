@@ -22,7 +22,7 @@ class TransportationOrderListView(ListAPIView):
     template_name = "orders_list.html"
 
     def get(self, request, *args, **kwargs):
-        orders = TransportationOrder.objects.all().order_by("id")
+        orders = TransportationOrder.objects.all().order_by("date", "done")
         return Response({"serializer": self.serializer_class(orders), "orders": orders},
                         template_name = self.template_name)
 
@@ -53,7 +53,6 @@ class TransportationOrderCreateView(CreateAPIView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        next_url = request.GET.get("next")
         if form.is_valid():
             order = form.save(commit = False)
             load_place_id = order.load_place_id
@@ -73,10 +72,7 @@ class TransportationOrderCreateView(CreateAPIView):
                 return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
             order.save()
             messages.success(self.request, "Transportation order created successfully.")
-            if next_url:
-                redirect(next_url)
-            else:
-                return redirect("orders-list")
+            return redirect("orders-list")
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
@@ -91,15 +87,16 @@ class TransportationOrderUpdateView(UpdateAPIView):
 
     def get(self, request, *args, **kwargs):
         order = self.get_object()
+        tanker = order.tanker_volume
         form = self.form_class(instance = order)
-        return Response({"serializer": self.serializer_class(order), "form": form, "order": order},
+        return Response({"serializer": self.serializer_class(order), "form": form, "order": order, "tanker": tanker},
                         template_name = self.template_name)
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         order = self.get_object()
+        tanker = order.tanker_volume
         form = self.form_class(request.POST, instance = order)
-        next_url = request.Get.get("next")
         if form.is_valid():
             order = form.save(commit = False)
             load_place_id = order.load_place_id
@@ -119,12 +116,9 @@ class TransportationOrderUpdateView(UpdateAPIView):
                 return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
             order.save()
             messages.success(self.request, "Transportation order updated successfully.")
-            if next_url:
-                redirect(next_url)
-            else:
-                return redirect("orders-list")
+            return redirect("orders-list")
         else:
-            return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
+            return Response({"form": form, "tanker": tanker}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(login_required, name = "dispatch")
 @permission_classes([IsLogistician])
@@ -241,31 +235,6 @@ class PlaceDestroyView(DestroyAPIView):
 
 @method_decorator(login_required, name = "dispatch")
 @permission_classes([IsLogistician])
-class TankerListView(ListAPIView):
-    serializer_class = TankerTrailerSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "tankers_list.html"
-
-    def get(self, request, *args, **kwargs):
-        tankers = TankerTrailer.objects.all().order_by("id")
-        return Response({"serializer": self.serializer_class(tankers), "tankers": tankers},
-                        template_name = self.template_name)
-
-@method_decorator(login_required, name = "dispatch")
-@permission_classes([IsLogistician])
-class TankerRetrieveView(RetrieveAPIView):
-    serializer_class = TankerTrailerSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "tanker_retrieve.html"
-
-    def get(self, request, *args, **kwargs):
-        tanker_id = kwargs.get("pk")
-        tanker = get_object_or_404(TankerTrailer, id = tanker_id)
-        return Response({"serializer": self.serializer_class(tanker), "tanker": tanker},
-                        template_name = self.template_name)
-
-@method_decorator(login_required, name = "dispatch")
-@permission_classes([IsLogistician])
 class TankerCreateView(CreateAPIView):
     form_class = TankerForm
     renderer_classes = [TemplateHTMLRenderer]
@@ -311,21 +280,3 @@ class TankerUpdateView(UpdateAPIView):
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(login_required, name = "dispatch")
-@permission_classes([IsLogistician])
-class TankerDestroyView(DestroyAPIView):
-    queryset = TankerTrailer.objects.all()
-    serializer_class = TankerTrailerSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "tanker_delete.html"
-
-    def get(self, request, *args, **kwargs):
-        tanker = self.get_object()
-        return Response({"serializer": self.serializer_class(tanker), "tanker": tanker},
-                        template_name = self.template_name)
-
-    def post(self, request, *args, **kwargs):
-        tanker = self.get_object()
-        tanker.delete()
-        messages.success(self.request, "Tanker trailer object deleted successfully.")
-        return redirect("homepage")
