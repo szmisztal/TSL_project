@@ -17,7 +17,7 @@ from .forms import AssignForm
 @transaction.atomic
 def assign_order_to_driver(request, pk):
     try:
-        order = TransportationOrder.objects.get(pk = pk)
+        order = TransportationOrder.current.get(pk = pk)
     except TransportationOrder.DoesNotExist as e:
         messages.error(request, str(e))
         return redirect("assign-order")
@@ -43,7 +43,7 @@ class OrdersListView(APIView):
     template_name = "assign_order.html"
 
     def get(self, request, *args, **kwargs):
-        orders = TransportationOrder.objects.all().order_by("date")
+        orders = TransportationOrder.current.all().order_by("date")
         return Response({"serializer": self.serializer_class(orders), "orders": orders},
                         template_name = self.template_name)
 
