@@ -8,7 +8,7 @@ from .forms import OrderDoneForm
 
 @login_required
 @permission_classes([IsDriver])
-def actual_order(request):
+def current_order(request):
     try:
         driver = request.user
         order = TransportationOrder.objects.get(driver_id = driver)
@@ -20,6 +20,7 @@ def actual_order(request):
         if form.is_valid():
             done = form.cleaned_data["done"]
             order.done = done
+            order.driver = None
             order.save()
             messages.success(request, "Order finished")
             return redirect("homepage")
