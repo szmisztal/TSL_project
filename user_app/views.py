@@ -40,7 +40,6 @@ def sign_up(request):
 
 def sign_in(request):
     template_name = "login.html"
-    next_url = request.GET.get("next")
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -50,10 +49,7 @@ def sign_in(request):
             if user:
                 login(request, user)
                 messages.success(request, "You're logged in.")
-                if next_url:
-                    return redirect(next_url)
-                else:
-                    return redirect("homepage")
+                return redirect("homepage")
         messages.error(request, "Wrong username or password.")
     else:
         if request.user.is_authenticated:
