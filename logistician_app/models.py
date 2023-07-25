@@ -40,7 +40,7 @@ class TankerTrailer(models.Model):
         return whole_volume
 
     def __str__(self):
-        return "Tanker trailer volume:" + str(self.get_volume())
+        return str(self.get_volume())
 
 class TransportationOrder(models.Model):
     date = models.DateField(default = datetime.date.today, validators = [MinValueValidator(datetime.date.today)])
@@ -67,8 +67,8 @@ class TransportationOrder(models.Model):
 
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
-            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} {self.tanker_volume}. " \
-                   f"DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
+            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place}, TANKER VOLUME: {self.tanker_volume}. " \
+                   f"WEIGHT: {self.load_weight}, DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
         else:
             return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} TRAILER: {self.trailer_type}. " \
                    f"WEIGHT: {self.load_weight}. DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
