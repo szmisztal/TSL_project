@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from user_app.models import CustomUser
 import datetime
+from . managers import CurrentOrderManager, ArchivedOrderManager
 
 class TrailerType(models.TextChoices):
     CURTAIN_SIDE = "Curtain-side trailer"
@@ -44,13 +45,17 @@ class TankerTrailer(models.Model):
 class TransportationOrder(models.Model):
     date = models.DateField(default = datetime.date.today, validators = [MinValueValidator(datetime.date.today)])
     trailer_type = models.CharField(max_length = 64, choices = TrailerType.choices)
-    tanker_volume = models.OneToOneField(TankerTrailer, on_delete = models.CASCADE, blank = True, null = True, related_name = "tanker+")
+    tanker_volume = models.ForeignKey(TankerTrailer, on_delete = models.CASCADE, blank = True, null = True, related_name = "transportation_order")
     load_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(24000)])
     load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order load+")
     delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
     driver = models.OneToOneField(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
                                related_name = "assigned_order+", null = True, blank = True)
     done = models.BooleanField(default = False, null = True, blank = True)
+
+    objects = models.Manager()
+    current = CurrentOrderManager()
+    archived = ArchivedOrderManager()
 
     def place_restrict(self, load_place_id, delivery_place_id):
         if load_place_id == delivery_place_id:
@@ -63,10 +68,10 @@ class TransportationOrder(models.Model):
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
             return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} {self.tanker_volume}. " \
-                   f"DELIVERY PLACE: {self.delivery_place}"
+                   f"DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
         else:
             return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} TRAILER: {self.trailer_type}. " \
-                   f"WEIGHT: {self.load_weight}. DELIVERY PLACE: {self.delivery_place}"
+                   f"WEIGHT: {self.load_weight}. DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
 
 
 
