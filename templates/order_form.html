@@ -6,6 +6,9 @@
     {{ form.as_p }}
     <button type="submit">Save</button>
   </form>
+  {% if tanker %}
+    <p>If you want to edit tanker chambers volumes visit: <a href="{% url 'tanker-update' tanker.id %}">"Update volumes".</a></p>
+  {% endif %}
   <p>If you want to create new load/delivery place visit: <a href="{% url 'place-create' %}">"Add new place"</a>, and try again.</p>
   <p>If you have to add order for tanker trailers visit: <a href="{% url 'tanker-create' %}">"Set up volumes"</a>, and set up volumes for tanker chambers.</p>
   {% if order.id %}
