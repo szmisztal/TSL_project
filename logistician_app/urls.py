@@ -14,11 +14,8 @@ urlpatterns = [
     path('place_update/<int:pk>/', views.PlaceUpdateView.as_view(), name = 'place-update'),
     path('place_destroy/<int:pk>/', views.PlaceDestroyView.as_view(), name = 'place-destroy'),
 
-    path('tankers_list/', views.TankerListView.as_view(), name = 'tankers-list'),
-    path('tanker/<int:pk>/', views.TankerRetrieveView.as_view(), name = 'tanker-retrieve'),
     path('tanker_create/', views.TankerCreateView.as_view(), name = 'tanker-create'),
     path('tanker_update/<int:pk>/', views.TankerUpdateView.as_view(), name = 'tanker-update'),
-    path('tanker_destroy/<int:pk>/', views.TankerDestroyView.as_view(), name = 'tanker-destroy')
 ]
 
 
