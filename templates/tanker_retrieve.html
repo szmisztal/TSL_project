@@ -1,6 +1,0 @@
-{% extends 'index.html' %}
-{% block title %} Tanker retrieve {% endblock %}
-{% block site %}
-    {{ tanker }}<br><br>
-    <button type="submit"><a href="{% url 'tanker-update' tanker.id %}">Edit or delete tanker</a></button>
-{% endblock %}
