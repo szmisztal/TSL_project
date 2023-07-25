@@ -6,7 +6,4 @@
     {{ form.as_p }}
     <button type="submit">Save</button>
   </form>
-  {% if tanker.id %}
-    <button type="submit"><a href="{% url 'tanker-destroy' tanker.id %}">Delete</a></button>
-  {% endif %}
 {% endblock %}
