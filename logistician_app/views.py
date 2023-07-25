@@ -53,6 +53,7 @@ class TransportationOrderCreateView(CreateAPIView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        next_url = request.GET.get("next")
         if form.is_valid():
             order = form.save(commit = False)
             load_place_id = order.load_place_id
@@ -64,17 +65,18 @@ class TransportationOrderCreateView(CreateAPIView):
                 messages.error(self.request, str(e))
                 form.initial = form.cleaned_data
                 return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
-
             try:
                 order.full_clean()
             except ValidationError as e:
                 messages.error(self.request, str(e))
                 form.initial = form.cleaned_data
                 return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
-
             order.save()
             messages.success(self.request, "Transportation order created successfully.")
-            return redirect("orders-list")
+            if next_url:
+                redirect(next_url)
+            else:
+                return redirect("orders-list")
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
@@ -97,6 +99,7 @@ class TransportationOrderUpdateView(UpdateAPIView):
     def post(self, request, *args, **kwargs):
         order = self.get_object()
         form = self.form_class(request.POST, instance = order)
+        next_url = request.Get.get("next")
         if form.is_valid():
             order = form.save(commit = False)
             load_place_id = order.load_place_id
@@ -108,17 +111,18 @@ class TransportationOrderUpdateView(UpdateAPIView):
                 messages.error(self.request, str(e))
                 form.initial = form.cleaned_data
                 return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
-
             try:
                 order.full_clean()
             except ValidationError as e:
                 messages.error(self.request, str(e))
                 form.initial = form.cleaned_data
                 return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
-
             order.save()
             messages.success(self.request, "Transportation order updated successfully.")
-            return redirect("orders-list")
+            if next_url:
+                redirect(next_url)
+            else:
+                return redirect("orders-list")
         else:
             return Response({"form": form}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
 
@@ -137,7 +141,10 @@ class TransportationOrderDestroyView(DestroyAPIView):
 
     def post(self, request, *args, **kwargs):
         order = self.get_object()
+        tanker = order.tanker_volume
         order.delete()
+        if tanker:
+            tanker.delete()
         messages.success(self.request, "Transportation order deleted successfully.")
         return redirect("orders-list")
 
