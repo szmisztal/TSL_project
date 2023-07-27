@@ -44,7 +44,7 @@ def send_emails(request):
         f"{driver.first_name} {driver.last_name} finished his order.",
         "app.mail@gmail.com",
         emails + ["sz.misztal@gmail.com"],
-        fail_silently=False
+        fail_silently = False
     )
 
 
