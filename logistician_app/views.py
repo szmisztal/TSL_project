@@ -9,6 +9,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView,
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
+from rest_framework.views import APIView
 from user_app.permissions import IsLogistician
 from .models import TransportationOrder, LoadOrDeliveryPlace, TankerTrailer
 from .serializers import TransportationOrderSerializer, LoadOrDeliveryPlaceSerializer, TankerTrailerSerializer
@@ -16,28 +17,20 @@ from .forms import OrderForm, PlaceForm, TankerForm
 
 @method_decorator(login_required, name = "dispatch")
 @permission_classes([IsLogistician])
-class TransportationOrderListView(ListAPIView):
+class TransportationOrderView(APIView):
     serializer_class = TransportationOrderSerializer
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = "orders_list.html"
 
     def get(self, request, *args, **kwargs):
         orders = TransportationOrder.objects.all().order_by("date", "done")
-        return Response({"serializer": self.serializer_class(orders), "orders": orders},
-                        template_name = self.template_name)
-
-@method_decorator(login_required, name = "dispatch")
-@permission_classes([IsLogistician])
-class TransportationOrderRetrieveView(RetrieveAPIView):
-    serializer_class = TransportationOrderSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "order_retrieve.html"
-
-    def get(self, request, *args, **kwargs):
         order_id = kwargs.get("pk")
-        order = get_object_or_404(TransportationOrder, id = order_id)
-        return Response({"serializer": self.serializer_class(order), "order": order},
-                        template_name = self.template_name)
+        if order_id:
+            order = get_object_or_404(TransportationOrder, id = order_id)
+            return Response({"serializer": self.serializer_class(order), "order": order},
+                            template_name = "order_retrieve.html")
+        else:
+            return Response({"serializer": self.serializer_class(orders), "orders": orders},
+                        template_name = "orders_list.html")
 
 @method_decorator(login_required, name = "dispatch")
 @permission_classes([IsLogistician])
