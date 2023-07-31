@@ -3,15 +3,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from rest_framework.generics import ListAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import CustomUser
 from .serializers import UserSerializer
 from .forms import LoginForm, RegisterForm
 
 @method_decorator(login_required, name = "dispatch")
-class UsersListView(ListAPIView):
+class UsersListView(APIView):
     serializer_class = UserSerializer
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "users_list.html"
