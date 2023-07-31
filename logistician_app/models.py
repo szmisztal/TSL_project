@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from user_app.models import CustomUser
 import datetime
-from . managers import CurrentOrderManager, ArchivedOrderManager
+from .managers import CurrentOrderManager, ArchivedOrderManager
 
 class TrailerType(models.TextChoices):
     CURTAIN_SIDE = "Curtain-side trailer"
@@ -36,7 +36,17 @@ class TankerTrailer(models.Model):
     chamber_5 = models.PositiveSmallIntegerField(blank = True, null = True, default = 0, validators = [MaxValueValidator(11500)])
 
     def get_volume(self):
-        whole_volume = self.chamber_1 + self.chamber_2 + self.chamber_3 + self.chamber_4 + self.chamber_5
+        whole_volume = 0
+        if self.chamber_1 is not None:
+            whole_volume += self.chamber_1
+        if self.chamber_2 is not None:
+            whole_volume += self.chamber_2
+        if self.chamber_3 is not None:
+            whole_volume += self.chamber_3
+        if self.chamber_4 is not None:
+            whole_volume += self.chamber_4
+        if self.chamber_5 is not None:
+            whole_volume += self.chamber_5
         return whole_volume
 
     def __str__(self):
@@ -47,8 +57,8 @@ class TransportationOrder(models.Model):
     trailer_type = models.CharField(max_length = 64, choices = TrailerType.choices)
     tanker_volume = models.ForeignKey(TankerTrailer, on_delete = models.CASCADE, blank = True, null = True, related_name = "transportation_order")
     load_weight = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(24000)])
-    load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order load+")
-    delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation order delivery+")
+    load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation_order_load")
+    delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation_order_delivery")
     driver = models.OneToOneField(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
                                related_name = "assigned_order+", null = True, blank = True)
     done = models.BooleanField(default = False, null = True, blank = True)
@@ -57,21 +67,23 @@ class TransportationOrder(models.Model):
     current = CurrentOrderManager()
     archived = ArchivedOrderManager()
 
-    def place_restrict(self, load_place_id, delivery_place_id):
+    def place_restrict(self):
+        load_place_id = self.load_place_id
+        delivery_place_id = self.delivery_place_id
         if load_place_id == delivery_place_id:
-            raise ValueError("Load place cannot be the same as delivery place.")
+            raise Exception("Load place cannot be the same as delivery place.")
 
     def empty_tanker_volume(self):
         if self.trailer_type == "Tanker trailer" and self.tanker_volume == None:
-            raise ValueError("Order for tanker trailer must have tanker chamber volumes set up.")
+            raise Exception("Order for tanker trailer must have tanker chamber volumes set up.")
 
     def __str__(self):
         if self.trailer_type == "Tanker trailer":
-            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place}, TANKER VOLUME: {self.tanker_volume}. " \
-                   f"WEIGHT: {self.load_weight}, DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
+            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place}, TRAILER: {self.trailer_type}," \
+                   f" TANKER VOLUME: {self.tanker_volume}, WEIGHT: {self.load_weight}, DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
         else:
-            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place} TRAILER: {self.trailer_type}. " \
-                   f"WEIGHT: {self.load_weight}. DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
+            return f"TRANSPORTATION ORDER DATE: {self.date}, LOAD PLACE: {self.load_place}, TRAILER: {self.trailer_type}," \
+                   f" WEIGHT: {self.load_weight}, DELIVERY PLACE: {self.delivery_place}, DONE: {self.done}"
 
 
 
