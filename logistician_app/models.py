@@ -60,7 +60,7 @@ class TransportationOrder(models.Model):
     load_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation_order_load")
     delivery_place = models.ForeignKey(LoadOrDeliveryPlace, on_delete = models.PROTECT, related_name = "transportation_order_delivery")
     driver = models.OneToOneField(CustomUser, limit_choices_to = {"role": "Driver"}, on_delete = models.SET_NULL,
-                               related_name = "assigned_order+", null = True, blank = True)
+                               related_name = "assigned_order", null = True, blank = True)
     done = models.BooleanField(default = False, null = True, blank = True)
 
     objects = models.Manager()
