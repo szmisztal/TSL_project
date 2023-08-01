@@ -14,8 +14,8 @@ def current_order(request):
     try:
         driver = request.user
         order = TransportationOrder.objects.get(driver_id = driver)
-    except TransportationOrder.DoesNotExist as e:
-        messages.error(request, str(e))
+    except TransportationOrder.DoesNotExist:
+        messages.error(request, "You don`t have any order right now. Try later.")
         return render(request, "index.html")
     if request.method == "POST":
         form = OrderDoneForm(request.POST)
@@ -41,8 +41,8 @@ def send_emails(request):
 
     send_mail(
         "ORDER FINISHED",
-        f"{driver.first_name} {driver.last_name} finished his order.",
-        "app.mail@gmail.com",
+        f"{driver.first_name} {driver.last_name} has finished his order.",
+        "sz.misztal@gmail.com",
         emails + ["sz.misztal@gmail.com"],
         fail_silently = False
     )
