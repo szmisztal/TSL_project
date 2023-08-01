@@ -20,7 +20,7 @@ class TransportationOrderView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request, *args, **kwargs):
-        orders = TransportationOrder.objects.all().order_by("date", "done")
+        orders = TransportationOrder.objects.all().order_by("done", "date")
         order_id = kwargs.get("pk")
         if order_id:
             order = get_object_or_404(TransportationOrder, id = order_id)
