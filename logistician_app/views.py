@@ -71,23 +71,20 @@ class TransportationOrderCreateOrUpdateView(APIView):
     def post(self, request, *args, **kwargs):
         order_id = kwargs.get("pk")
         form = self.form_class(request.POST)
+        tanker = None
         if order_id:
             order = get_object_or_404(TransportationOrder, id = order_id)
             form = self.form_class(request.POST, instance = order)
             tanker = order.tanker_volume
-            if form.is_valid():
-                order = form.save(commit = False)
-                response = self.validate_and_save_order(order, form)
-                if response is not None:
-                    return response
+        if form.is_valid():
+            order = form.save(commit = False)
+            response = self.validate_and_save_order(order, form)
+            if response is not None:
+                return response
+            if order_id:
                 messages.success(self.request, "Transportation order updated successfully.")
                 return redirect("orders-list")
-        else:
-            if form.is_valid():
-                order = form.save(commit = False)
-                response = self.validate_and_save_order(order, form)
-                if response is not None:
-                    return response
+            else:
                 messages.success(self.request, "Transportation order created successfully.")
                 return redirect("orders-list")
         return Response({"form": form, "tanker": tanker}, template_name = self.template_name, status = status.HTTP_400_BAD_REQUEST)
