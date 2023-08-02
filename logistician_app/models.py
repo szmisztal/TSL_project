@@ -50,7 +50,7 @@ class TankerTrailer(models.Model):
         return whole_volume
 
     def __str__(self):
-        return str(self.get_volume())
+        return f"{self.chamber_1} + {self.chamber_2} + {self.chamber_3} + {self.chamber_4} + {self.chamber_5} = " + str(self.get_volume())
 
 class TransportationOrder(models.Model):
     date = models.DateField(default = datetime.date.today, validators = [MinValueValidator(datetime.date.today)])
