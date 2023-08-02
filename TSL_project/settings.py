@@ -1,9 +1,9 @@
 from pathlib import Path
-from .password import PASSWORD
+from .secrets import SECRET_KEY, SENDGRID_API_KEY
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-z&ukojs0pxngz-*i0j#q3(6mu-)9^q7-#=#hd+dw8ec3pe4v8a'
+SECRET_KEY = SECRET_KEY
 
 DEBUG = True
 
@@ -111,9 +111,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'sz.misztal@gmail.com'
-EMAIL_HOST_PASSWORD = PASSWORD
-DEFAULT_FROM_EMAIL = 'sz.misztal@gmail.com'
+
 
