@@ -22,7 +22,7 @@ class LoadOrDeliveryPlace(models.Model):
     postal_code = models.CharField(max_length = 16)
     street = models.CharField(max_length = 64)
     street_number = models.PositiveSmallIntegerField()
-    contact_number = models.PositiveSmallIntegerField(blank = True, null = True)
+    contact_number = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return f"{self.country} - {self.state} - {self.town} {self.postal_code}, st. {self.street} {self.street_number}." \
