@@ -25,7 +25,10 @@ def current_order(request):
             order.driver = None
             order.save()
             messages.success(request, "Order finished")
-            send_emails(request)
+            try:
+                send_emails(request)
+            except Exception as e:
+                messages.error(request, f"Failed to send emails: {e}")
             return redirect("homepage")
     else:
         form = OrderDoneForm()
@@ -43,7 +46,7 @@ def send_emails(request):
         "ORDER FINISHED",
         f"{driver.first_name} {driver.last_name} has finished his order.",
         "sz.misztal@gmail.com",
-        emails + ["sz.misztal@gmail.com"],
+        emails,
         fail_silently = False
     )
 
