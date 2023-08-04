@@ -7,6 +7,7 @@ urlpatterns = [
     path('order_create/', views.TransportationOrderCreateOrUpdateView.as_view(), name = 'order-create'),
     path('order_update/<int:pk>/', views.TransportationOrderCreateOrUpdateView.as_view(), name = 'order-update'),
     path('order_destroy/<int:pk>/', views.TransportationOrderDestroyView.as_view(), name = 'order-destroy'),
+    path('archived_orders_list', views.ArchivedTransportationOrderView.as_view(), name = 'archived-orders'),
 
     path('places_list/', views.PlaceView.as_view(), name = 'places-list'),
     path('place/<int:pk>/', views.PlaceView.as_view(), name = 'place-retrieve'),
