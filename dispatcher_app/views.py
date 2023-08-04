@@ -21,7 +21,6 @@ def assign_order_to_driver(request, pk):
     except TransportationOrder.DoesNotExist as e:
         messages.error(request, str(e))
         return redirect("assign-order")
-
     if request.method == "POST":
         form = AssignForm(request.POST)
         if form.is_valid():
