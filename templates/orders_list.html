@@ -7,8 +7,8 @@
         {% endfor %}
     {% endif %}
     {% if archived_orders %}
-        {% for order in archived_orders %}
-            {{ order }}<br><br>
+        {% for archive_order in archived_orders %}
+            {{ archive_order }}<br><br>
         {% endfor %}
     {% endif %}
 {% endblock %}
