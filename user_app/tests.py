@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse, resolve
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import Group
+from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .forms import RegisterForm, LoginForm
@@ -11,6 +12,7 @@ from .views import sign_up, sign_in, sign_out
 class UserAppTest(TestCase):
 
     #MODELS
+
     def setUp(self):
         self.user1 = CustomUser.objects.create(username = "username1",
                                               first_name = "First",
@@ -33,9 +35,17 @@ class UserAppTest(TestCase):
                                               phone_number = 333333333,
                                               role = "Driver"
                                               )
+        self.user4 = CustomUser.objects.create(username = "username6",
+                                              first_name = "First",
+                                              last_name = "Last",
+                                              email = "test6@test.com",
+                                              phone_number = 666666666,
+                                              role = "Driver"
+                                              )
         self.logistician_group = Group.objects.create(name = "Logisticians group")
         self.dispatcher_group = Group.objects.create(name = "Dispatchers group")
         self.driver_group = Group.objects.create(name = "Drivers group")
+        self.non_driver = CustomUser.objects.get(username = self.user1.username)
 
     def test_custom_user_model(self):
         self.assertEqual(self.user1.username, "username1")
@@ -44,7 +54,7 @@ class UserAppTest(TestCase):
         self.assertEqual(self.user1.email, "test1@test.com")
         self.assertEqual(self.user1.phone_number, 111111111)
         self.assertEqual(self.user1.role, "Logistician")
-        self.assertEqual(CustomUser.objects.count(), 3)
+        self.assertEqual(CustomUser.objects.count(), 4)
 
     def test_username_is_unique(self):
         with self.assertRaises(IntegrityError):
@@ -55,6 +65,7 @@ class UserAppTest(TestCase):
                                       phone_number = 444444444,
                                       role = "Driver"
                                       )
+
     def test_email_is_unique(self):
         with self.assertRaises(IntegrityError):
             CustomUser.objects.create(username = "username4",
@@ -75,10 +86,6 @@ class UserAppTest(TestCase):
                                       role = "Driver"
                                       )
 
-    def test_create_auth_token(self):
-        token = Token.objects.get(user = self.user1)
-        self.assertIsNotNone(token)
-
     def test_set_group_logistician(self):
         self.user1.set_group()
         self.assertTrue(self.user1.groups.filter(name = "Logisticians group").exists())
@@ -96,6 +103,10 @@ class UserAppTest(TestCase):
         self.assertFalse(self.user3.groups.filter(name = "Logisticians group").exists())
         self.assertFalse(self.user3.groups.filter(name = "Dispatchers group").exists())
         self.assertTrue(self.user3.groups.filter(name = "Drivers group").exists())
+
+    def test_create_auth_token(self):
+        token = Token.objects.get(user = self.user1)
+        self.assertIsNotNone(token)
 
     # FORMS
 
@@ -186,7 +197,7 @@ class UserAppTest(TestCase):
         self.assertTemplateUsed(response, "users_list.html")
 
         users = response.context["users"]
-        self.assertEqual(len(users), 3)
+        self.assertEqual(len(users), 4)
 
     def test_users_list_view_unauthenticated(self):
         url = reverse("users-list")
@@ -194,3 +205,25 @@ class UserAppTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, expected_redirect_url)
+
+    # MANAGERS
+
+    def test_driver_manager_returns_drivers(self):
+        drivers = CustomUser.drivers.all()
+        self.assertEqual(drivers.count(), 2)
+        self.assertIn(self.user3, drivers)
+        self.assertIn(self.user4, drivers)
+        self.assertNotIn(self.non_driver, drivers)
+
+    def test_driver_manager_empty_result(self):
+        CustomUser.objects.all().delete()
+        drivers = CustomUser.drivers.all()
+        self.assertEqual(drivers.count(), 0)
+
+    def test_driver_manager_non_driver_role(self):
+        non_drivers = CustomUser.drivers.filter(role = "Dispatcher")
+        self.assertEqual(non_drivers.count(), 0)
+
+
+
+
