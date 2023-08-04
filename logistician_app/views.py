@@ -20,7 +20,7 @@ class TransportationOrderView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request, *args, **kwargs):
-        orders = TransportationOrder.objects.all().order_by("done", "date")
+        orders = TransportationOrder.current.all().order_by("date")
         order_id = kwargs.get("pk")
         if order_id:
             order = get_object_or_404(TransportationOrder, id = order_id)
@@ -28,6 +28,17 @@ class TransportationOrderView(APIView):
                             template_name = "order_retrieve.html")
         else:
             return Response({"serializer": self.serializer_class(orders), "orders": orders},
+                        template_name = "orders_list.html")
+
+@method_decorator(login_required, name = "dispatch")
+@permission_classes([IsLogistician])
+class ArchivedTransportationOrderView(APIView):
+    serializer_class = TransportationOrderSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get(self, request, *args, **kwargs):
+        archived_orders = TransportationOrder.archived.all().order_by("date")
+        return Response({"serializer": self.serializer_class(archived_orders), "archived_orders": archived_orders},
                         template_name = "orders_list.html")
 
 @method_decorator(login_required, name = "dispatch")
