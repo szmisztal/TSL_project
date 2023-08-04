@@ -27,8 +27,7 @@ class TransportationOrderView(APIView):
             return Response({"serializer": self.serializer_class(order), "order": order},
                             template_name = "order_retrieve.html")
         else:
-            return Response({"serializer": self.serializer_class(orders), "orders": orders},
-                        template_name = "orders_list.html")
+            return Response({"serializer": self.serializer_class(orders), "orders": orders}, template_name = "orders_list.html")
 
 @method_decorator(login_required, name = "dispatch")
 @permission_classes([IsLogistician])
