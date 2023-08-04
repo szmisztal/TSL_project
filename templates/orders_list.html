@@ -1,7 +1,14 @@
 {% extends 'index.html' %}
 {% block title %} Orders list {% endblock %}
 {% block site %}
-    {% for order in orders %}
-        <a href="{% url 'order-retrieve' order.id %}">{{ order }}</a><br><br>
-    {% endfor %}
+    {% if orders %}
+        {% for order in orders %}
+            <a href="{% url 'order-retrieve' order.id %}">{{ order }}</a><br><br>
+        {% endfor %}
+    {% endif %}
+    {% if archived_orders %}
+        {% for order in archived_orders %}
+            {{ order }}<br><br>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
