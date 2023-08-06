@@ -1,12 +1,13 @@
+from django.contrib.auth.hashers import make_password
 from django.test import TestCase, Client
 from django.urls import reverse, resolve
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import Group
-from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .forms import RegisterForm, LoginForm
 from .models import CustomUser
+from .serializers import UserSerializer
 from .views import sign_up, sign_in, sign_out
 
 class UserAppTest(TestCase):
@@ -224,6 +225,42 @@ class UserAppTest(TestCase):
         non_drivers = CustomUser.drivers.filter(role = "Dispatcher")
         self.assertEqual(non_drivers.count(), 0)
 
+    # SERIALIZERS
 
+    def test_serializer_create_user(self):
+        self.raw_password = "P455word!"
+        self.data = {
+            "username": "testuser",
+            "password": self.raw_password,
+            "first_name": "Test",
+            "last_name": "User",
+            "email": "testuser@email.com",
+            "phone_number": 987654321,
+            "role": "Driver"
+        }
+        self.serializer = UserSerializer(data=self.data)
+        self.assertTrue(self.serializer.is_valid(), self.serializer.errors)
+        user = self.serializer.save()
+        self.assertIsInstance(user, CustomUser)
+        self.assertEqual(user.username, self.data["username"])
+        self.assertEqual(user.first_name, self.data["first_name"])
+        self.assertEqual(user.last_name, self.data["last_name"])
+        self.assertEqual(user.email, self.data["email"])
+        self.assertEqual(user.phone_number, self.data["phone_number"])
+        self.assertEqual(user.role, self.data["role"])
+        self.assertNotEqual(user.password, self.raw_password)
+
+    def test_serializer_login(self):
+        self.raw_password = "P455word!"
+        user5 = CustomUser.objects.create_user(
+            username = "testuser",
+            password = self.raw_password,
+            first_name = "Test",
+            last_name = "User",
+            email = "testuser@email.com",
+            phone_number = 987654321,
+            role = "Driver"
+        )
+        self.assertTrue(user5.check_password(self.raw_password))
 
 
