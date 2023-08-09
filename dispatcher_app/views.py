@@ -31,7 +31,6 @@ def assign_order_to_driver(request, pk):
             return redirect("assign-order")
     else:
         form = AssignForm()
-
     return render(request, "assign_order_form.html", {"form": form, "order": order})
 
 @method_decorator(login_required, name = "dispatch")
