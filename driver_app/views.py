@@ -58,7 +58,6 @@ def send_emails(request):
     for user in dispatchers:
         email = user.email
         emails.append(email)
-
     send_mail(
         "ORDER FINISHED",
         f"{driver.first_name} {driver.last_name} has finished his order.",
