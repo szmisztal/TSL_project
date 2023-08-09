@@ -1,4 +1,3 @@
-from django.contrib.auth.hashers import make_password
 from django.test import TestCase, Client
 from django.urls import reverse, resolve
 from django.db.utils import IntegrityError
@@ -11,8 +10,6 @@ from .serializers import UserSerializer
 from .views import sign_up, sign_in, sign_out
 
 class UserAppTest(TestCase):
-
-    #MODELS
 
     def setUp(self):
         self.user1 = CustomUser.objects.create(username = "username1",
@@ -47,6 +44,8 @@ class UserAppTest(TestCase):
         self.dispatcher_group = Group.objects.create(name = "Dispatchers group")
         self.driver_group = Group.objects.create(name = "Drivers group")
         self.non_driver = CustomUser.objects.get(username = self.user1.username)
+
+    # MODELS
 
     def test_custom_user_model(self):
         self.assertEqual(self.user1.username, "username1")
