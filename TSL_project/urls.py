@@ -8,7 +8,7 @@ from .views import HomepageView
 
 
 urlpatterns = [
-    path('', HomepageView.as_view(), name = "homepage"),
+    path('', HomepageView.as_view(), name = 'homepage'),
     path('admin/', admin.site.urls),
     path('users/', include(user_urls.urlpatterns)),
     path('logistician/', include(logistician_urls.urlpatterns)),
