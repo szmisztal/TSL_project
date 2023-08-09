@@ -6,7 +6,6 @@ from dispatcher_app import urls as dispatcher_urls
 from driver_app import urls as driver_urls
 from .views import HomepageView
 
-
 urlpatterns = [
     path('', HomepageView.as_view(), name = 'homepage'),
     path('admin/', admin.site.urls),
